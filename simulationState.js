@@ -35,7 +35,7 @@ const simulationParams = {
   },
 
   set setRoom({axis, value}) {
-    this[`room${axis}`] = value
+    this[axis] = value
   },
 
   set setCarPosition({axis, value}) {

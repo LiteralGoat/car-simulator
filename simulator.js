@@ -3,6 +3,19 @@ const { simulationParams, simulationHistory } = require('./simulationState')
 const { drive } = require('./drive')
 const { hasCrashed } = require('./helpers')
 
+const userInput = (message, validators, errorMessage) => {
+  let correctInput = false
+  while(!correctInput) {
+    const input = prompt(message)
+    if (validators.test(input)) {
+      correctInput = true
+      return input
+    } else {
+      console.log(errorMessage ?? 'Please input any the correct value(s): ', validators)
+    }
+  }
+}
+
 const simulator = () => {
   console.log(`
   This game is based on a 1x1 meter coordinate system.
@@ -28,15 +41,20 @@ const simulator = () => {
   1     2     3     4
   `)
   console.log('+----------------------------------+')
-
-  console.log('Room size')
-  simulationParams.roomLength = parseInt(prompt('Enter the room length: '))
-  simulationParams.roomWidth = parseInt(prompt('Enter the room width: '))
+  console.log('Set Room Size')
+  simulationParams.setRoom = {
+    axis: 'roomLength',
+    value: parseInt(userInput('Enter the room length: ', /^[0-9]*$/, 'Please input a number!'))
+  }
+  simulationParams.setRoom = {
+    axis: 'roomWidth',
+    value: parseInt(userInput('Enter the room width: ', /^[0-9]*$/, 'Please input a number!'))
+  }
   console.log('+----------------------------------+')
 
   console.log('Type the starting position')
-  simulationParams.setCarPosition = {axis: 'length', value: parseInt(prompt('Car position on the North axis of room length: '))}
-  simulationParams.setCarPosition = {axis: 'width', value: parseInt(prompt('Car position on the East axis of room width: '))}
+  simulationParams.setCarPosition = {axis: 'length', value: parseInt(prompt('Car position on the north axis of room length: '))}
+  simulationParams.setCarPosition = {axis: 'width', value: parseInt(prompt('Car position on the east axis of room width: '))}
   console.log('+----------------------------------+')
 
   console.log('Instructions')
@@ -59,8 +77,7 @@ const simulator = () => {
     simulationHistory.setHistory = {
       action: simulationParams.getActions[i],
       direction: simulationParams.getCarDirection,
-      position: simulationParams.getCarPosition,
-      direction: simulationParams.getCarDirection
+      position: simulationParams.getCarPosition
     }
     if (hasCrashed(simulationParams.getCarPosition, simulationParams.getRoom)) {
       simulationHistory.setHistory = 'crash'
